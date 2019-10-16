@@ -45,7 +45,8 @@ export class HomeComponent implements OnInit {
       if(data!=null && data!=undefined){
         this.user=JSON.parse(data['_body']);
         this.display_name=this.user.display_name;
-        console.log(this.display_name)
+        this.img_url=this.user.images[0].url;
+        console.log(this.img_url[0].url);
         console.log(this.user)
       }
     });
