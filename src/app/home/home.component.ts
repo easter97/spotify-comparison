@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   id:string;
   playlists:any;
   playlist_ids:any=[];
+  songList:any=[];
   constructor(private route: ActivatedRoute, private spotify_service:SpotifyService) { }
 
   ngOnInit() {
@@ -43,7 +44,7 @@ export class HomeComponent implements OnInit {
     this.spotify_service.setToken(this.token.substring(13));
     this.user=this.spotify_service.getUser();
     this.user.subscribe( data => {
-      console.log(data);
+      //console.log(data);
       if(data!=null && data!=undefined){
         this.user=JSON.parse(data['_body']);
         this.display_name=this.user.display_name;
@@ -54,13 +55,20 @@ export class HomeComponent implements OnInit {
     let playlistSub=this.spotify_service.getPlaylists()
     playlistSub.subscribe( data => {
       this.playlists=JSON.parse(data['_body']).items;
-      console.log(this.playlists)
+      //console.log(this.playlists)
       for(let i=0; i<this.playlists.length; i++){
         this.playlist_ids.push(this.playlists[i].id);
       }
-      
-      let trackSub=this.spotify_service.getPlaylistTracks(this.playlist_ids[0]).subscribe( data => {
-        console.log(JSON.parse(data['_body']).items);
+      for(let i=0; i<this.playlist_ids.length; i++){
+        let trackSub=this.spotify_service.getPlaylistTracks(this.playlist_ids[i]);
+        trackSub.subscribe( tracks => {
+          let songs=JSON.parse(tracks['_body']).items;
+          for(let i = 0; i<songs.length; i++){
+            //console.log(songs[i].track.name);
+            this.songList.push(songs[i].track.name);
+          }
+        });
+      }
     });
     
   }

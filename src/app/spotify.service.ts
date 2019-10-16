@@ -11,7 +11,7 @@ export class SpotifyService{
   client_id:string = '06b0d17ee4194381b16f89b55b623ed2'; // Your client id
   client_secret = '660b85280c684f588a905ea63f4044f8'; // Your secret
   redirect_uri = 'http://localhost:4200/home'; // Your redirect uri
-  scopes = 'user-read-private user-read-email playlist-read-collaborative playlist-read-private user-library-read user-follow-read user-read-recently-played user-top-read'
+  scopes = 'user-read-private user-read-email playlist-read-private user-library-read user-follow-read user-read-recently-played user-top-read'
   token:string;
 
   constructor(private http: HttpClient, private _http: Http){
