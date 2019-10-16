@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
   display_name:string;
   id:string;
   playlists:any;
+  playlist_ids:any=[];
   constructor(private route: ActivatedRoute, private spotify_service:SpotifyService) { }
 
   ngOnInit() {
@@ -54,7 +55,14 @@ export class HomeComponent implements OnInit {
     playlistSub.subscribe( data => {
       this.playlists=JSON.parse(data['_body']).items;
       console.log(this.playlists)
+      for(let i=0; i<this.playlists.length; i++){
+        this.playlist_ids.push(this.playlists[i].id);
+      }
+      
+      let trackSub=this.spotify_service.getPlaylistTracks(this.playlist_ids[0]).subscribe( data => {
+        console.log(JSON.parse(data['_body']).items);
     });
+    
   }
 
 }

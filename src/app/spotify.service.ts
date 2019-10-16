@@ -32,5 +32,9 @@ export class SpotifyService{
     let options = new RequestOptions({ headers: headers });
     return this._http.get('https://api.spotify.com/v1/me', options)
   }
-
+  getPlaylistTracks(id:any){
+    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
+    let options = new RequestOptions({ headers: headers });
+    return this._http.get('https://api.spotify.com/v1/playlists/'+id+'/tracks', options)
+  }
 }
