@@ -1,0 +1,16 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+  <div>
+    <div id="login">
+     <h1>First, log in to spotify</h1>
+     <a href="{{getAuthUrl()}}">Log in</a>
+    </div>
+    <div id="loggedin">
+    </div>
+ </div>
+ <nav>
+  <a routerLink="/home" routerLinkActive="active">Home</a>
+</nav>
