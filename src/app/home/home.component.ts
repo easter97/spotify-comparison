@@ -15,6 +15,9 @@ export class HomeComponent implements OnInit {
   orderObj:any;
   url:string;
   user:any;
+  img_url:string;
+  display_name:string;
+  id:string;
   constructor(private route: ActivatedRoute, private spotify_service:SpotifyService) { }
 
   ngOnInit() {
@@ -40,7 +43,10 @@ export class HomeComponent implements OnInit {
     this.user.subscribe( data => {
       console.log(data);
       if(data!=null && data!=undefined){
-        this.user=data;
+        this.user=JSON.parse(data['_body']);
+        this.display_name=this.user.display_name;
+        console.log(this.display_name)
+        console.log(this.user)
       }
     });
 
