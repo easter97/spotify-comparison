@@ -1,5 +1,10 @@
+<img src={{this.img_url}}>
 <p>
-  home works!
   {{this.display_name}}
 </p>
-<img src={{this.img_url}}>
+<p>Playlists</p>
+<ul>
+  <li *ngFor="let playlist of playlists; let i = index">
+    {{ playlists[i]['name'] }}
+  </li>
+</ul>
