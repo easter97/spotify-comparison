@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Http, Response, Request, RequestOptions, RequestOptionsArgs, Headers} from '@angular/http';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -22,10 +22,17 @@ export class SpotifyService{
     
   }
 
-  getPlaylists(){
+  getPlaylists(limit:string='50'){
+    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
+    let params = new HttpParams();
+    params = params.append('limit',limit);
+    let options = new RequestOptions({ headers: headers, params: params }, );
+    return this._http.get('https://api.spotify.com/v1/me/playlists', options)
+  }
+  getUserPlaylists(id:string){
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
     let options = new RequestOptions({ headers: headers });
-    return this._http.get('https://api.spotify.com/v1/me/playlists', options)
+    return this._http.get('https://api.spotify.com/v1/users/'+id+'/playlists', options)
   }
   getUser(){
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
@@ -36,5 +43,10 @@ export class SpotifyService{
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
     let options = new RequestOptions({ headers: headers });
     return this._http.get('https://api.spotify.com/v1/playlists/'+id+'/tracks', options)
+  }
+  getComparedUser(id:string){
+    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
+    let options = new RequestOptions({ headers: headers });
+    return this._http.get('https://api.spotify.com/v1/users/'+id, options)
   }
 }
