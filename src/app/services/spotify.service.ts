@@ -24,15 +24,13 @@ export class SpotifyService{
 
   getPlaylists(limit:string='50'){
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let params = new HttpParams();
-    params = params.append('limit',limit);
-    let options = new RequestOptions({ headers: headers, params: params }, );
-    return this._http.get('https://api.spotify.com/v1/me/playlists', options)
+    let options = new RequestOptions({ headers: headers}, );
+    return this._http.get('https://api.spotify.com/v1/me/playlists'+'?limit=' + encodeURIComponent(limit), options)
   }
-  getUserPlaylists(id:string){
+  getUserPlaylists(id:string,limit:string='50'){
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers });
-    return this._http.get('https://api.spotify.com/v1/users/'+id+'/playlists', options)
+    let options = new RequestOptions({ headers: headers}, );
+    return this._http.get('https://api.spotify.com/v1/users/'+id+'/playlists'+'?limit=' + encodeURIComponent(limit), options)
   }
   getUser(){
     const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });

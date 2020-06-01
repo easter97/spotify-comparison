@@ -13,8 +13,9 @@
     </div>
     <p>Playlists</p>
     <ul class=song-list>
-      <li *ngFor="let song of user?.songList; let i = index">
-        {{ song}}
+      <li *ngFor="let playlist of user?.modifiedPlaylists; let i = index">
+        {{ playlist?.name}}
+        <button class=remove (click)="removePlaylist(playlist.id, 'current')">&#10005;</button>
       </li>
     </ul>
   </div>
@@ -27,10 +28,12 @@
 
       <p>Playlists</p>
       <ul class=song-list>
-        <li *ngFor="let song of comparedUser?.songList; let i = index">
-          {{ song }}
+        <li *ngFor="let playlist of comparedUser?.modifiedPlaylists; let i = index">
+          {{ playlist?.name }}
+          <button class=remove (click)="removePlaylist(playlist.id, 'compared')">&#10005;</button>
         </li>
       </ul>
     </div>
   </div>
 </div>
+<div class="compare">Compare <button (click)="compareUsers()">>></button></div>
