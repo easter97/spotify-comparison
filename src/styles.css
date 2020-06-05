@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css?family=Signika:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
 html{
     background-color: #2c3134;
-    font-family: 'Signika';
+    font-family: 'Lato';
 }
 body{
     margin:0px;
 }
 button, input{
-    font-family: 'Signika';
+    font-family: 'Lato';
 }

@@ -1,6 +1,60 @@
-<button (click)="compareUsers()">compare</button>
-<div>
-  <ul>
-    <li *ngFor="let song of commonSongs">{{song.track.name}}</li>
-  </ul>
+<section class="hero">
+  <div class="content">
+    <div class=users>
+      <div class=user>
+        <img class=user-img src={{this.currentUser.img}}>
+        <div>{{this.currentUser.display_name}}</div>
+      </div>
+      <div class=and>
+        &
+      </div>
+      <div class=user>
+        <img class=user-img src={{this.comparedUser.img}}>
+        <div>{{this.comparedUser.display_name}}</div>
+      </div>
+    </div>
+    <div class=stats>
+      <div class=artist-percentage><span>{{this.artistCommonality}}%</span> of artists in common</div>
+      <div class=song-percentage><span>{{this.songCommonality}}%</span> of songs in common</div>
+    </div>    
+  </div>
+  <div class="waves"></div>
+</section>
+<div class="artists stars">
+  <div class="small"></div>
+        <div class="medium"></div>
+        <div class="big"></div>
+  <div class=title>Top Artists</div>
+    <div class="top-artists">
+      <div *ngFor="let artist of topArtists; let i=index" class=artist-tile animateOnScroll animationName="animated fadeIn">
+        <div class=rank>{{i+1}}</div>
+        <img class=artist-img src={{artist.images[0].url}}>
+        <div class=artist-name>{{artist.name}}</div>
+      </div>
+    </div>
+</div>
+<div class=container>
+  <div id=metrics>
+    Top Genres
+    <div class="top-genres">
+      <div *ngFor="let genre of topGenres|slice:0:12; let i=index" class=genre>
+        <div class=genre-tag><div class=genre-rank>{{i+1}}</div> <div class=genre-name>{{genre.name}}</div></div>
+      </div>
+    </div>
+  
+  </div>
+
+  <div id=common-songs>
+    {{commonSongs.length}} Songs in Common
+    <div class=song-list>
+      <div class=song *ngFor="let song of commonSongs">
+        <img class=cover-art src="{{song.track.album.images[0].url}}">
+        <div class=details>
+          {{song.track.name}}
+        <div class=artist>{{song.track.artists[0].name}}</div>
+        </div>
+        
+      </div>
+      </div>
+  </div>
 </div>
