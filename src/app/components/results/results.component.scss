@@ -1,0 +1,369 @@
+$waves:#0dc367;
+.container{
+    display:flex;
+    padding:15px;
+    height: 100vh;
+}
+#common-songs{
+    flex:30%;
+    padding:10px;
+}
+#metrics{
+    flex:70%;
+    padding:15px;
+}
+.song{
+    padding:10px;
+    background: rgb(44,49,52);
+    background: linear-gradient(0deg, rgba(44,49,52,1) 0%, rgba(65,72,75,0.7049194677871149) 48%, rgba(44,49,52,1) 100%);
+    border-bottom:1px solid #818682;
+    display: flex;
+}
+.song-list{
+    overflow: scroll;
+    height: 92vh;
+    border: 1px solid #818682;
+    border-radius: 12px;
+}
+.artist{
+    color:#b3b3b3;
+    font-size: 13px;
+}
+.cover-art{
+    width: 50px;
+    height: 50px;
+    // flex:25%;
+
+}
+.details{
+    display: inline-block;
+    margin-left: 20px;
+    flex:75%;
+    line-height: 25px;
+}
+.artists{
+    min-height: 100vh;
+    background-color: $waves;
+    padding:20px;
+}
+.top-artists {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+   justify-content: center;
+}
+.top-artists>* {
+    flex: 1 1 200px;
+    
+}
+.top-genres{
+    display: flex;
+    flex-wrap: wrap;
+}
+.top-genres>* {
+    flex: 1 1 auto;
+}
+.artist-img{
+    height:200px;
+    width:200px;
+    display: block;
+    margin:auto;
+    border-radius:12px;
+    transition:all .3s;
+    z-index: 1;
+}
+.artist-name{
+    text-align: center;
+    background: #2c3134;
+    opacity: .7;
+    border-radius: 0px 0px 12px 12px;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    z-index: 2;
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+.artist-tile{
+    position: relative;
+    margin:20px;
+    min-height:200px;
+    max-width:200px;
+    border-radius:12px;
+    z-index: 1;
+}
+
+.rank{
+    position: absolute;
+    z-index: 2;
+    top:0px;
+    left:0px;
+    font-size: 13px;
+    // display: inline;
+    padding: 10px;
+    border-radius: 12px 0px 0px 0px;
+    background: #2c3134;
+}
+.genre-tag{
+    background-color:#0dc367;
+    border-radius: 4px;
+    color:#2c3134;
+    margin:10px;
+    padding:5px;
+}
+.genre-rank{
+    color:white;
+    border-right:1px solid #076938;
+    padding:5px;
+    display: inline;
+    padding-right:10px
+}
+.genre-name{
+    padding:5px;
+    display: inline;
+}
+.users{
+    font-size: 25px;
+    font-weight: bold;
+    color:#0dc367;
+    display: flex;
+}
+.user{
+    flex:1;
+    margin:35px;
+}
+.and{
+    flex: 1;
+    margin:auto;
+    font-size:40px;
+    font-weight:bold;
+    color: $waves;
+}
+.user-img{
+    height: 200px;
+    width: 200px;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+}
+.artist-percentage span, .song-percentage span{
+    font-size:25px;
+    font-weight: bold;
+    color:#0dc367
+}
+.title{
+    font-size: 25px;
+    font-weight: bold;
+    color:white;
+    margin:15px;
+}
+//hero
+// body {
+//     font-size: 16px;
+//     font-family: 'Montserrat', sans-sherif;
+//     margin: 0;
+//     padding: 0;
+//   }
+  
+  .content {
+    // max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width:100%;
+  }
+  
+  .hero {
+    position: relative;
+    background: #333333;
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .hero .users {
+    position: relative;
+    z-index: 1;
+    // font-size: 4.0rem;
+    margin: 0 0 10px;
+    line-height: 1;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    // color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .hero .stats {
+    position: relative;
+    z-index: 1;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.4;
+    text-align: center;
+    padding:25px;
+  }
+  
+  /* ========================= */
+  
+  .waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background-color: $waves;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+    transition: 500ms;
+    width:100%;
+  }
+  
+  .waves::before,
+  .waves::after {
+    content: '';
+    position: absolute;
+    width: 300vw;
+    height: 300vw;
+    top: -65vw;
+    left: 50%;
+    transform: translate(-50%, -75%);
+  }
+  
+  .waves::before {
+    border-radius: 44%;
+    background: rgba(51, 51, 51, 1);
+    animation: waves 8s linear infinite;
+  }
+  
+  .waves::after {
+    border-radius: 44%;
+    background: rgba(51, 51, 51, 0.5);
+    animation: waves 15s linear infinite;
+  }
+  
+  @keyframes waves {
+    0% {
+      transform: translate(-50%, -75%) rotate(0deg);
+    }
+    
+    100% {
+      transform: translate(-50%, -75%) rotate(360deg);
+    }
+  }
+
+  //starts
+  // creates randomized star sizes
+@function stars($n) {
+    $value: '#{random(2000)}px #{random(2000)}px #fff';
+    @for $i from 2 through $n {
+      $value: '#{$value} , #{random(2000)}px #{random(2000)}px #fff';
+    }
+    @return unquote($value);
+  }
+  
+  // store random stars
+  $stars-small: stars(700);
+  $stars-medium: stars(200);
+  $stars-big: stars(100);
+  
+  
+  .stars {
+    z-index: -1;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .stars > .small {
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    box-shadow: $stars-small;
+    animation: starsAnimation 50s linear infinite;
+  
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 2000px;
+      width: 2px;
+      height: 2px;
+      background: transparent;
+      box-shadow: $stars-small;
+    }
+  }
+  
+  .stars > .medium {
+    width: 3px;
+    height: 3px;
+    background: transparent;
+    box-shadow: $stars-medium;
+    animation: starsAnimation 100s linear infinite;
+  
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 2000px;
+      width: 3px;
+      height: 3px;
+      background: transparent;
+      box-shadow: $stars-medium;
+    }
+  }
+  
+  .stars > .big {
+    width: 4px;
+    height: 4px;
+    background: transparent;
+    box-shadow: $stars-big;
+    border-radius: 100%;
+    animation: starsAnimation 150s linear infinite;
+  
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 2000px;
+      width: 4px;
+      height: 4px;
+      background: transparent;
+      box-shadow: $stars-big;
+      border-radius: 100%;
+    }
+  }
+  
+  // swap from/to values to reverse animation
+  @keyframes starsAnimation {
+    from {
+      transform: translateY(-2000px);
+    }
+    to {
+      transform: translateY(0px);
+    }
+  }
+  @media only screen and (max-width: 600px) {
+    .users{
+        font-size: 15px;
+        width:335px;
+    }
+    .user{
+        flex:1;
+        margin:25px;
+    }
+    .and{
+        flex: 1;
+        margin:auto;
+        font-size:25px;
+        font-weight:bold;
+        color: $waves;
+    }
+    .user-img{
+        height: 100px;
+        width: 100px;
+        border-radius: 100%;
+        display: block;
+        margin: auto;
+    }
+  }
+  
