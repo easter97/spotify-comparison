@@ -3,6 +3,7 @@ import { UserObject } from '../home/home.component';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { SpotifyService } from 'src/app/services/spotify.service';
 import { forkJoin } from 'rxjs';  // RxJS 6 syntax
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-results',
@@ -20,17 +21,25 @@ export class ResultsComponent implements OnInit {
   uncommonArtists=[];
   artistCommonality;
   songCommonality;
-  @HostListener('window:beforeunload', ['$event'])
-      unloadNotification($event: any) {
-        // sessionStorage.setItem("user", this.getUser());
-        this.dataService.currentUser = this.currentUser;
-        this.dataService.comparedUser = this.comparedUser; 
-      }
+  loading=true;
+
   constructor(private dataService:UserDataService,
-              private spotify_service:SpotifyService) { 
-                this.currentUser = this.dataService.currentUser;
-                this.comparedUser = this.dataService.comparedUser;
-                console.log("initialized"+this.comparedUser.display_name)
+              private spotify_service:SpotifyService,
+              private router:Router) { 
+                if(this.dataService.currentUser!=undefined){
+                  this.currentUser = this.dataService.currentUser;
+                  this.comparedUser = this.dataService.comparedUser;
+                  console.log("initialized"+this.comparedUser.display_name);
+
+                  sessionStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+                  sessionStorage.setItem("comparedUser", JSON.stringify(this.comparedUser));
+                }
+                else{
+                  this.currentUser=JSON.parse(sessionStorage.getItem("currentUser"));
+                  this.comparedUser=JSON.parse(sessionStorage.getItem("comparedUser"));
+                  console.log(this.currentUser)
+                  console.log(this.comparedUser)
+                }
               }
   findElement(arr, propName, propValue) {
     for (var i=0; i < arr.length; i++)
@@ -101,6 +110,10 @@ export class ResultsComponent implements OnInit {
       }
       this.topGenres = this.sort_by_key(this.topGenres, 'popularity');
       console.log(this.topGenres)
+    },
+    error => {
+      // alert("Your request could not be completed, for best results try and limit playlist length to under 200 songs");
+      this.router.navigate(['/home']);
     });  
   }
   getTracks(playlists:any){
@@ -123,6 +136,10 @@ export class ResultsComponent implements OnInit {
           for(let i = 0; i<songs.length; i++){
             songList.push(songs[i]);
           }
+        },
+        error => {
+          // alert("Your request could not be completed, for best results try and limit playlist length to under 200 songs");
+          this.router.navigate(['/home']);
         });  
         offset=offset+50
       }
@@ -141,24 +158,33 @@ export class ResultsComponent implements OnInit {
   ngOnInit() {
     window.scroll(0,0);
     
-    this.comparedUser.songList=this.getTracks(this.comparedUser.modifiedPlaylists);
-    this.currentUser.songList=this.getTracks(this.currentUser.modifiedPlaylists);
+      this.comparedUser.songList=this.getTracks(this.comparedUser.modifiedPlaylists);
+      this.currentUser.songList=this.getTracks(this.currentUser.modifiedPlaylists);
+
+      
+      
+
+
+      let finished = forkJoin(this.subArray);
+      finished.subscribe( result => {
+        this.compareUsers();
+        
+        this.getArtistGenres();
+        this.artistCommonality=((this.commonArtists.length/(this.uncommonArtists.length+this.commonArtists.length)*100)).toFixed(2);
+        this.songCommonality=((this.commonSongs.length/(this.currentUser.songList.length+this.comparedUser.songList.length-this.commonSongs.length))*100).toFixed(2);
+        console.log("Common Artist Percentage: "+this.artistCommonality);
+        console.log(this.commonSongs.length, this.currentUser.songList.length, this.comparedUser.songList.length);
+        
+        console.log("Common Song Percentage: "+this.songCommonality);
+        this.loading=false;
+
+      });
     
-
-
-    let finished = forkJoin(this.subArray);
-    finished.subscribe( result => {
-      this.compareUsers();
-      
-      this.getArtistGenres();
-      this.artistCommonality=((this.commonArtists.length/(this.uncommonArtists.length+this.commonArtists.length)*100)).toFixed(2);
-      this.songCommonality=((this.commonSongs.length/(this.currentUser.songList.length+this.comparedUser.songList.length-this.commonSongs.length))*100).toFixed(2);
-      console.log("Common Artist Percentage: "+this.artistCommonality);
-      console.log(this.commonSongs.length, this.currentUser.songList.length, this.comparedUser.songList.length);
-      
-      console.log("Common Song Percentage: "+this.songCommonality);
-
-    });
   }
+  // @HostListener('window:beforeunload', ['$event'])
+  //     unloadNotification($event: any) {
+  //       sessionStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+  //       sessionStorage.setItem("comparedUser", JSON.stringify(this.comparedUser));
+  //     }
 
 }

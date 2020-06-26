@@ -5,10 +5,10 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  title = 'Spotify Comparison';
+  title = 'Comparify';
   client_id:string = '06b0d17ee4194381b16f89b55b623ed2'; // Your client id
   client_secret = '660b85280c684f588a905ea63f4044f8'; // Your secret
   redirect_uri = environment.redirect_uri; // Your redirect uri

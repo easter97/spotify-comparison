@@ -1,16 +1,20 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <div>
-    <div id="login">
-     <h1>First, log in to spotify</h1>
-     <a href="{{getAuthUrl()}}">Log in</a>
-    </div>
-    <div id="loggedin">
-    </div>
+<div class=background>
+<div class=overlay></div>
  </div>
- <nav>
-  <a routerLink="/home" routerLinkActive="active">Home</a>
-</nav>
+ <div class=login-content>
+   <div class=center>
+    <h1>
+      Welcome to {{ title }}!
+    </h1>
+    <div>
+      <div id="login">
+       <h3>Compare your taste in music with other Spotify users</h3>
+       <a class=login href="{{getAuthUrl()}}">Log in with Spotify</a>
+      </div>
+      <div id="loggedin">
+      </div>
+   </div>
+  
+ </div>
+ 
