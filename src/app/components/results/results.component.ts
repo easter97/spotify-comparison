@@ -22,6 +22,7 @@ export class ResultsComponent implements OnInit {
   artistCommonality;
   songCommonality;
   loading=true;
+  commonSongDivider:number;
 
   constructor(private dataService:UserDataService,
               private spotify_service:SpotifyService,
@@ -87,7 +88,7 @@ export class ResultsComponent implements OnInit {
   }
   getArtistGenres(){
     let ids=[];
-    for(let artist of this.commonArtists.slice(0,12)){
+    for(let artist of this.commonArtists.slice(0,10)){
       ids.push(artist.id);
     }
     let artistSub=this.spotify_service.getArtists(ids);
@@ -154,6 +155,7 @@ export class ResultsComponent implements OnInit {
       return ((x > y) ? -1 : ((x < y) ? 1 : 0));
     });
   }
+  
 
   ngOnInit() {
     window.scroll(0,0);
@@ -177,6 +179,8 @@ export class ResultsComponent implements OnInit {
         
         console.log("Common Song Percentage: "+this.songCommonality);
         this.loading=false;
+        this.commonSongDivider=Math.floor(this.commonSongs.length/3);
+        console.log(this.commonSongDivider);
 
       });
     

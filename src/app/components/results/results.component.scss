@@ -1,12 +1,16 @@
 $waves:#0dc367;
-.container{
-    display:flex;
-    padding:15px;
-    height: 100vh;
+#common-songs{
+    // display:flex;
+    // padding:15px;
+    // height: 100vh;
+    background-color: #861657;
+    background-image: linear-gradient(326deg, #861657 0%, #ffa69e 74%);
+
 }
 #common-songs{
     flex:30%;
     padding:10px;
+    height: 98vh;
 }
 #metrics{
     flex:70%;
@@ -14,30 +18,32 @@ $waves:#0dc367;
 }
 .song{
     padding:10px;
-    background: rgb(44,49,52);
-    background: linear-gradient(0deg, rgba(44,49,52,1) 0%, rgba(65,72,75,0.7049194677871149) 48%, rgba(44,49,52,1) 100%);
-    border-bottom:1px solid #818682;
-    display: flex;
+    // display: flex;
+    flex: 0 0 auto;
+    min-width:250px;
+    max-width:250px;
 }
 .song-list{
-    overflow: scroll;
-    height: 92vh;
-    border: 1px solid #818682;
-    border-radius: 12px;
+    overflow-y: scroll;
+}
+.row{
+    display:flex;
 }
 .artist{
-    color:#b3b3b3;
+    color:gainsboro;
     font-size: 13px;
 }
 .cover-art{
-    width: 50px;
-    height: 50px;
-    // flex:25%;
+    width: 150px;
+    height: 150px;
+    position: relative;
+    z-index: 2;
+    display:inline;
 
 }
 .details{
     display: inline-block;
-    margin-left: 20px;
+    // margin-left: 20px;
     flex:75%;
     line-height: 25px;
 }
@@ -69,8 +75,8 @@ $waves:#0dc367;
 }
 .artist-img{
     position: relative;
-    width: 280px;
-    height: 280px;
+    width: 200px;
+    height: 20px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
     margin-top: 20px;
     z-index: 1;
@@ -93,9 +99,9 @@ $waves:#0dc367;
     background-color: #FFFFFF;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
     position: relative;
-    margin-bottom: 180px;
-    height: 280px;
-    max-width: 280px;
+    margin-bottom: 150px;
+    height: 200px;
+    max-width: 200px;
     margin-right: auto;
     margin-left: auto;
     z-index: 1;
@@ -279,7 +285,7 @@ $waves:#0dc367;
     overflow: hidden;
     top: 0;
     left: 0;
-    width: 100%;
+    // width: 100%;
     height: 100%;
     transition: opacity 1s ease-in-out;
   }
@@ -406,6 +412,29 @@ $waves:#0dc367;
 			animation-name: move3;
 		}
 	}
+}
+
+.vinyl {
+    background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/83141/vinyl.png);
+    background-position: center, center;
+    background-size: cover, 40% auto;
+    background-repeat: no-repeat;
+    border-radius: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    height: 125px;
+    width: 125px;
+    z-index: 1;
+    position: relative;
+    left: 75px;
+    top: -140px;
+}
+.album{
+    max-height: 150px;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0;
 }
 
 @keyframes rotate {
