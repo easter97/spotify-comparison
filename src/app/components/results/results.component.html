@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class=row style="margin-left:125px">
-          <div class=song *ngFor="let song of commonSongs| slice:commonSongDivider+1:commonSongDivider*2+1; let i = index;">
+          <div class=song *ngFor="let song of commonSongs| slice:commonSongDivider:commonSongDivider*2; let i = index;">
           <div class=album>
             <img class=cover-art src="{{song.track.album.images[0].url}}">
             <div class=vinyl ></div>
@@ -81,7 +81,7 @@
         </div>
         </div>
         <div class=row>
-          <div class=song *ngFor="let song of commonSongs| slice:commonSongDivider*2+2:commonSongs.length-1; let i = index;">
+          <div class=song *ngFor="let song of commonSongs| slice:commonSongDivider*2:commonSongs.length; let i = index;">
           <div class=album>
             <img class=cover-art src="{{song.track.album.images[0].url}}">
             <div class=vinyl ></div>
