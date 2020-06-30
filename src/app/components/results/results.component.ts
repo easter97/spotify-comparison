@@ -88,7 +88,7 @@ export class ResultsComponent implements OnInit {
   }
   getArtistGenres(){
     let ids=[];
-    for(let artist of this.commonArtists.slice(0,10)){
+    for(let artist of this.commonArtists.slice(0,12)){
       ids.push(artist.id);
     }
     let artistSub=this.spotify_service.getArtists(ids);

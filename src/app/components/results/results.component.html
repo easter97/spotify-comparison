@@ -35,22 +35,30 @@
           <div class="big"></div>
     <div class=title>Top Artists</div>
       <div class="top-artists">
-        <div *ngFor="let artist of topArtists; let i=index" class=artist-tile animateOnScroll animationName="animated fadeIn">
+        <div *ngFor="let artist of topArtists|slice:0:10; let i=index" class=artist-tile animateOnScroll animationName="animated fadeIn">
           <div class=rank>{{i+1}}</div>
           <div class=artist-name>{{artist.name}}</div>
           <img class=artist-img src={{artist.images[0].url}}>
         </div>
       </div>
   </div>
+  <div class=all-artists>
+    <div class=title>All Artists</div>
+    <div class=artist-list>
+      <div *ngFor="let artist of commonArtists">{{artist.name}}</div>
+    </div>
     <div id=genres>
       <div class=title>Top Genres</div>
       <div class="top-genres">
-        <div *ngFor="let genre of topGenres|slice:0:10; let i=index" class=genre>
+        <div *ngFor="let genre of topGenres|slice:0:12; let i=index" class=genre>
           <div class=genre-tag><div class=genre-rank>{{i+1}}</div> <div class=genre-name>{{genre.name}}</div></div>
         </div>
       </div>
+      
     
-    </div>
+    </div>  
+  </div>
+    
   
     <div id=common-songs>
       <div class=title>{{commonSongs.length}} Songs in Common</div>
