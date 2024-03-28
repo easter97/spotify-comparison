@@ -155,6 +155,10 @@ export class ResultsComponent implements OnInit {
       return ((x > y) ? -1 : ((x < y) ? 1 : 0));
     });
   }
+  createPlaylist(){
+    this.spotify_service.createPlaylist(this.currentUser, this.comparedUser, this.currentUser.display_name+" & "+this.comparedUser.display_name)
+    .subscribe( response => {console.log(response)});
+  }
   
 
   ngOnInit() {
