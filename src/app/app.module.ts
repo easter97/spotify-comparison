@@ -10,13 +10,17 @@ import { LoginComponent } from './components/login/login.component';
 import { FormsModule } from '@angular/forms';
 import { ResultsComponent } from './components/results/results.component';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { SpotifyComparisonComponent } from './components/spotify-comparison/spotify-comparison.component';
+import { SportifyComponent } from './components/sportify/sportify.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     LoginComponent,
-    ResultsComponent
+    ResultsComponent,
+    SpotifyComparisonComponent,
+    SportifyComponent
   ],
   imports: [
     BrowserModule,
