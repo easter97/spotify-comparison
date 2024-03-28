@@ -1,0 +1,111 @@
+.welcome{
+    font-size: 35px;
+    text-align: center;
+    padding: 25px;
+    color: #666;
+    font-weight: bold;    
+}
+.wrapper{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.intro{
+    // padding: 25px;
+    background-image: url("../../../assets/images/equipment.png");
+    background-repeat: no-repeat, repeat;
+    background-size: cover;
+    
+    color: #666
+}
+.desc{
+    padding: 15px;
+    font-size: 18px;
+    text-align: center;
+    color: #666;
+}
+.quote{
+    font-size: 35px;
+    margin-top: 15px;
+    font-weight: bold;
+    text-align: center;
+    color:white;
+    background-color: rgba(110, 107, 107, .25);  
+    backdrop-filter: blur(25px);
+    box-shadow: 0px 1px 15px -4px #000000;
+}
+.exercises{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 80%;
+    .exercise{
+        margin: 15px;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #666;
+        background-color: rgba(110, 107, 107, .25);  
+        backdrop-filter: blur(20px);
+        box-shadow: 0px 1px 15px -4px #000000;
+        border: 1px solid #cdcdcd;
+        transition: transform 1s, font-size 1s;
+        &:hover{
+            border: 1px solid #1DB954;
+            cursor: pointer;
+            transform: scale(110%);
+            backdrop-filter: blur(25px);
+            .title{
+                font-size: 18px;
+            }
+            .bpm{
+                font-size: 14px;
+            }
+        }
+        .title{
+            font-size:16px;
+            padding: 5px;
+            text-align: center;
+            font-weight: bold;
+            // color: #1DB954;
+        }
+        .bpm{
+            font-size: 12px;
+            padding: 5px;
+            text-align: center;
+        }
+    }
+}
+.song-list{
+    list-style: none;
+    // box-shadow: 0px 0px 10px 0px rgba(125,123,125,1);
+    // border-radius: 5px;
+    padding:0px;
+    li {
+      padding:10px;
+      // border-bottom: 1px solid rgb(105, 104, 104);
+      box-shadow: 0px 0px 10px 0px rgba(125,123,125,1);
+    border-radius: 5px;
+    margin:5px;
+      text-align: center;
+      height: 25px;
+    }
+  }
+  .remove{
+    float: right;
+    background:none;
+    border:none;
+    color:white;
+    padding:5px;
+    outline:none;
+    &:hover{
+      cursor: pointer;
+      color:red;
+    }
+  }

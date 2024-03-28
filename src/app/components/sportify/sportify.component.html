@@ -1,0 +1,35 @@
+<div class="wrapper intro">
+<div class=welcome>Welcome to Sportify</div>
+<div class=desc>Sportify samples music you already love and helps you create a custom playlist for your workouts based on the ideal BPM for your exercise.</div>
+
+<div class=select>Please select your exercise:</div>
+<div class=exercises>
+  <div class=exercise *ngFor="let exercise of exercises" (click)="selectExercise(exercise)">
+    <div class=title>{{exercise.name}}</div>
+    <div class=bpm>{{exercise.bpm}}</div>
+  </div>
+</div>
+<div *ngIf="activeExercise!=null" class="wrapper playlist">
+  <p>Select up to 5 playlists to sample from:</p>
+  <ul class=song-list>
+    <li *ngFor="let playlist of user?.modifiedPlaylists; let i = index">
+      {{ playlist?.name}}
+      <button class=remove (click)="removePlaylist(playlist.id, 'current')">&#10005;</button>
+    </li>
+  </ul>
+  <button (click)="createPlaylist()">Create Playlist </button>
+</div>
+
+
+<!-- <div class=quote>
+  <p>“Fitness playlists are extremely important. A number of studies show that music can impact mood, emotions, energy levels, even breathing and heart rates.”</p>
+  <p>-Shirley Archer</p>
+</div> -->
+<!-- There’s a simple test you can perform to zero in on the best BPM for your run.
+
+Start by running for 15 minutes at a comfortable pace – one that you can keep up for the full 15.
+Count your steps for one minute.
+After a little more running, count your steps for another minute.
+Repeat this procedure at least one more time so you have a good average.
+Use this average to see how many beats in a minute will naturally fit with your current running ability. -->
+</div>
