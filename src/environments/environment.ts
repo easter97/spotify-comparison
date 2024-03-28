@@ -6,6 +6,8 @@ export const environment = {
   production: false,
   redirect_uri: 'http://localhost:4200/home',
   base_href: "/",
+  client_id: '06b0d17ee4194381b16f89b55b623ed2', 
+  client_secret: '660b85280c684f588a905ea63f4044f8'
 };
 
 /*
