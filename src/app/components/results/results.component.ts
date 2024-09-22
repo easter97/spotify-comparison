@@ -92,9 +92,9 @@ export class ResultsComponent implements OnInit {
       ids.push(artist.id);
     }
     let artistSub=this.spotify_service.getArtists(ids);
-    artistSub.subscribe( tracks => {
-      console.log(JSON.parse(tracks['_body']))
-      this.topArtists=JSON.parse(tracks['_body']).artists;
+    artistSub.subscribe( (tracks : any) => {
+      console.log(tracks)
+      this.topArtists=tracks.artists;
       console.log(this.topArtists)
       for(let artist of this.topArtists){
         for(let genre of artist.genres){
@@ -132,8 +132,8 @@ export class ResultsComponent implements OnInit {
       for(let l=0; l<loops; l++){
         let trackSub=this.spotify_service.getPlaylistTracks(playlists[i].id);
         this.subArray.push(trackSub);
-        trackSub.subscribe( tracks => {
-          let songs=JSON.parse(tracks['_body']).items;
+        trackSub.subscribe( (tracks : any)  => {
+          let songs=tracks.items;
           for(let i = 0; i<songs.length; i++){
             songList.push(songs[i]);
           }

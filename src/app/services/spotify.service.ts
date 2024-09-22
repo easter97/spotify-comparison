@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Http, Response, Request, RequestOptions, RequestOptionsArgs, Headers} from '@angular/http';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment'
 
@@ -15,7 +14,7 @@ export class SpotifyService{
   scopes = 'user-read-private user-read-email playlist-read-private user-library-read user-follow-read user-read-recently-played user-top-read'
   token:string;
 
-  constructor(private http: HttpClient, private _http: Http){
+  constructor(private http: HttpClient){
 
   }
   setToken(code:string){
@@ -24,35 +23,29 @@ export class SpotifyService{
   }
 
   getPlaylists(limit:string='50'){
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers}, );
-    return this._http.get('https://api.spotify.com/v1/me/playlists'+'?limit=' + encodeURIComponent(limit), options)
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
+    return this.http.get('https://api.spotify.com/v1/me/playlists'+'?limit=' + encodeURIComponent(limit), { headers })
   }
   getUserPlaylists(id:string,limit:string='50'){
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers}, );
-    return this._http.get('https://api.spotify.com/v1/users/'+id+'/playlists'+'?limit=' + encodeURIComponent(limit), options)
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
+    return this.http.get('https://api.spotify.com/v1/users/'+id+'/playlists'+'?limit=' + encodeURIComponent(limit), { headers })
   }
   getUser(){
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers });
-    return this._http.get('https://api.spotify.com/v1/me', options)
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
+    return this.http.get('https://api.spotify.com/v1/me', { headers })
   }
   getPlaylistTracks(id:string, offset=0){
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers });
-    return this._http.get('https://api.spotify.com/v1/playlists/'+id+'/tracks'+'?offset=' + encodeURIComponent(offset.toString()), options)
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
+    return this.http.get('https://api.spotify.com/v1/playlists/'+id+'/tracks'+'?offset=' + encodeURIComponent(offset.toString()), { headers })
   }
   getComparedUser(id:string){
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers });
-    return this._http.get('https://api.spotify.com/v1/users/'+id, options)
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
+    return this.http.get('https://api.spotify.com/v1/users/'+id, { headers })
   }
   getArtists(ids){
     //50 at a time
-    const headers = new Headers({ 'Authorization': 'Bearer ' + this.token });
-    let options = new RequestOptions({ headers: headers });
+    const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token });
     console.log('https://api.spotify.com/v1/artists'+'?ids=' + encodeURIComponent(ids.join()));
-    return this._http.get('https://api.spotify.com/v1/artists'+'?ids=' + encodeURIComponent(ids.join()), options)
+    return this.http.get('https://api.spotify.com/v1/artists'+'?ids=' + encodeURIComponent(ids.join()), { headers })
   }
 }

@@ -45,24 +45,25 @@ export class HomeComponent implements OnInit {
               private dataService:UserDataService) { }
 
   getUser(id:string){
+    console.log('getting user')
     this.userSub=this.spotify_service.getComparedUser(id);
-    this.comparedUser=this.userSub.subscribe( data => {
-      console.log(data);
+    this.comparedUser=this.userSub.subscribe( (data : any) => {
+      console.log("data", data);
       if(data!=null && data!=undefined){
-        let body=JSON.parse(data['_body']);
+        let body=data
         this.comparedUser.display_name=body.display_name;
-        this.comparedUser.img=body.images[0].url;
+        this.comparedUser.img=body.images[1].url;
         this.comparedUser.id=body.id;
-        this.spotify_service.getUserPlaylists(id).subscribe(data => {
+        this.spotify_service.getUserPlaylists(id).subscribe((data : any) => {
           //console.log(data);
           if(data!=null && data!=undefined){
-            console.log(JSON.parse(data['_body']).items);
-            this.comparedUser.playlists=JSON.parse(data['_body']).items;
-            this.comparedUser.modifiedPlaylists=JSON.parse(data['_body']).items;
+            console.log(data.items);
+            this.comparedUser.playlists=data.items;
+            this.comparedUser.modifiedPlaylists=data.items;
             if(this.onlyUserCreated){
               this.onlyUserPlaylists();
             }
-            // this.comparedUser.songList=this.getTracks(JSON.parse(data['_body']).items, this.comparedUser.id)
+            // this.comparedUser.songList=this.getTracks(data.items, this.comparedUser.id)
           }
         });
       }
@@ -151,12 +152,12 @@ export class HomeComponent implements OnInit {
     //   this.comparedUser=JSON.parse(sessionStorage.getItem("comparedUser"));
     // }
     // else{
-      this.spotify_service.getUser().subscribe( data => {
-        //console.log(data);
+      this.spotify_service.getUser().subscribe( (data : any) => {
+        console.log("user", data);
         if(data!=null && data!=undefined){
-          let body=JSON.parse(data['_body']);
+          let body=data
           this.user.display_name=body.display_name;
-          this.user.img=body.images[0].url;
+          this.user.img=body.images[1].url;
           this.user.id=body.id;
         }
       },
@@ -165,10 +166,13 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/login']);
       },);
       let playlistSub=this.spotify_service.getPlaylists()
-      playlistSub.subscribe( data => {
+      playlistSub.subscribe( (data : any) => {
         console.log(data)
-        this.user.playlists=JSON.parse(data['_body']).items;
-        this.user.modifiedPlaylists=JSON.parse(data['_body']).items;
+        if(data!=null && data!=undefined){
+          this.user.playlists=data.items;
+        this.user.modifiedPlaylists=data.items;
+        }
+        
         
         // this.user.songList=this.getTracks(this.user.playlists, this.user.id);
         if(this.onlyUserCreated){
