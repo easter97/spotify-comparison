@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+html{
+    background-color: #2c3134;
+    font-family: 'Lato';
+}
+body{
+    margin:0px;
+}
+button, input{
+    font-family: Lato;
+}
+button{
+    font-family: Lato;
+    all: unset;
+    background: black;
+    color: gainsboro;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: all 1s;
+    &:hover{
+        background:#de5a18;
+        padding: 10px 30px;
+    }
+}
