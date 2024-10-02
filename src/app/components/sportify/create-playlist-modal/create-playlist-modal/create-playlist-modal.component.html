@@ -1,1 +1,27 @@
-<p>create-playlist-modal works!</p>
+<h2 mat-dialog-title>Create Your Playlist</h2>
+<div class=create-modal>
+    <mat-dialog-content [formGroup]="form">
+  
+        <mat-form-field>
+            <mat-label>Playlist Name</mat-label>
+            <input matInput
+                    placeholder="Playlist Name"
+                   formControlName="name">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Playlist Description</mat-label>
+            <textarea matInput
+                    placeholder="Playlist Description"
+                   formControlName="description"></textarea>
+        </mat-form-field>
+        <mat-checkbox class="example-margin">Make my playlist private</mat-checkbox>
+    
+     
+    </mat-dialog-content>
+</div>
+
+
+<mat-dialog-actions>
+    <button class="mat-raised-button"(click)="close()">Close</button>
+    <button class="mat-raised-button mat-primary"(click)="save()">Save</button>
+</mat-dialog-actions>

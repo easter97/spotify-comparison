@@ -7,6 +7,7 @@
 <div class="stepper">
   <!-- Step content -->
   <div class="step step0" *ngIf="currentStep === 0">
+    <button (click)="currentStep=4">Skip to 4</button>
     <div class=welcome>Welcome to Sportify</div>
   <div class=desc>Sportify samples music you already love and helps you create a custom playlist for your workouts based on the ideal BPM for your exercise.</div>  
     <button (click)="nextStep()">Get Started</button>
@@ -75,7 +76,7 @@
               OR
               <mat-form-field class="example-full-width">
                 <mat-label>Desired Length (minutes)</mat-label>
-                <input matInput type="number" placeholder="If blank, no limit" [(ngModel)]="playlistLimit">
+                <input matInput type="number" placeholder="If blank, no limit" [(ngModel)]="playlistRuntime">
               </mat-form-field>
               
               <mat-form-field>
@@ -124,12 +125,12 @@
           </select>
         </mat-form-field>
       </div>
-      <div class=title *ngIf="!playlistLimit">{{playlistSongs.length}} Songs for this playlist</div>
-      <div class=title *ngIf="playlistLimit">Showing {{playlistSongs.length}} of {{commonSongs.length}} possible songs for this playlist</div>
-      <button *ngIf="playlistLimit && playlistLimit < commonSongs.length" (click)="reshuffle()">Shuffle</button>
+      <div class=title *ngIf="!playlistLimit && !playlistRuntime">{{playlistSongs.length}} Songs for this playlist</div>
+      <div class=title *ngIf="playlistLimit || playlistRuntime">Showing {{playlistSongs.length}} of {{commonSongs.length}} possible songs for this playlist</div>
       <div class=stats>
-        <div class=stat>Runtime {{this.runtime | number:'1.0-0'}} minutes</div>
-        <div class=stat>Average BPM {{this.avgBPM | number:'1.0-0'}}</div>
+        <div class=stat><span class='stat-title'>Average BPM</span><span class=stat-value>{{this.avgBPM | number:'1.0-0'}}</span></div>
+        <div class=stat><span class='stat-title'>Runtime</span> <span class=stat-value>{{this.runtime | number:'1.0-0'}} </span><span class='stat-sub'>minutes</span></div>
+        <div class='stat' *ngIf="(playlistLimit && playlistLimit < commonSongs.length) || (playlistRuntime && playlistSongs.length < commonSongs.length)" (click)="reshuffle()"><span class='stat-title'>Shuffle</span><button class="shuffle-button" ><i class="fa-solid fa-shuffle"></i></button></div>
       </div>
       <div class=song-list>
         <div class=row>
@@ -151,9 +152,9 @@
         </div>
         <div class=playlist>
           <div class=create-playlist>
-            <h1>Better Together.</h1>
-            <h3>Create a playlist inspired by both your music tastes</h3>
-            <button (click)=createPlaylist()>Create</button>
+            <h1>Like what you see? Make it official.</h1>
+            <h3>Create this playlist in Spotify</h3>
+            <button (click)=openDialog()>Create</button>
           </div>
         </div>
         
@@ -161,11 +162,12 @@
     </div>
   </div>
 
-  <!-- Navigation Buttons -->
-  <!-- <div class="navigation">
-    <button (click)="previousStep()" [disabled]="currentStep === 1">Previous</button>
-    <button (click)="nextStep()" [disabled]="currentStep === maxStep">Next</button>
-  </div> -->
+  <div class="step step4" *ngIf="currentStep == 4">
+    <h1>You're ready to sweat!</h1>
+    <h3>Your custom playlist has been saved to Spotify</h3>
+    <iframe style="border-radius:12px" [src]="playlistURL" width="80%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    <button (click)="currentStep=0">Make Another</button>
+  </div>
 </div>
 
 

@@ -20,6 +20,10 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatDialogModule} from '@angular/material/dialog';
+import { CreatePlaylistModalComponent } from './components/sportify/create-playlist-modal/create-playlist-modal/create-playlist-modal.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -29,6 +33,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ResultsComponent,
     SpotifyComparisonComponent,
     SportifyComponent,
+    CreatePlaylistModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,6 +47,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatSliderModule,
     MatFormFieldModule,
     BrowserAnimationsModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatCheckboxModule
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

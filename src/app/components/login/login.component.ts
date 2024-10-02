@@ -12,7 +12,7 @@ export class LoginComponent implements OnInit {
   client_id = environment.client_id;
   client_secret = environment.client_secret
   redirect_uri = environment.redirect_uri; // Your redirect uri
-  scopes = 'user-read-private user-read-email playlist-read-collaborative playlist-read-private user-library-read user-follow-read user-read-recently-played user-top-read'
+  scopes = 'user-read-private user-read-email playlist-read-collaborative playlist-read-private user-library-read user-follow-read user-read-recently-played user-top-read playlist-modify-public playlist-modify-private'
   code:any;
   constructor(private route: ActivatedRoute) { }
 

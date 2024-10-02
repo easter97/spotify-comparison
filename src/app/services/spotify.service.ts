@@ -176,10 +176,30 @@ export class SpotifyService{
       );
     } 
   }
-  createPlaylist(user1, user2, name){
-    let body={"name": name, "description": "A playlist inspired by "+user1.display_name+" and "+user2.display_name}
+  createPlaylist(user, name, description, isPublic=true){
+    let body = {
+      name: name,
+      description: description,
+      public: isPublic
+    };
     const headers = new HttpHeaders({ 'Authorization': 'Bearer ' + this.token , "Content-Type": "application/json"});
     let options = { headers: headers };
-    return this.http.post('https://api.spotify.com/v1/users/'+user1.id+'/playlists', body, options)
+    return this.http.post('https://api.spotify.com/v1/users/'+user.id+'/playlists', body, options)
+  }
+  addTracksToPlaylist(playlistId: string, songs:any) {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + this.token,
+      'Content-Type': 'application/json'
+    });
+    let trackUris=[];
+    for(let song of songs){
+      trackUris.push(song.uri)
+    }
+  
+    const body = {
+      uris: trackUris // List of track URIs
+    };
+  
+    return this.http.post(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, body, { headers });
   }
 }

@@ -156,8 +156,13 @@ export class ResultsComponent implements OnInit {
     });
   }
   createPlaylist(){
-    this.spotify_service.createPlaylist(this.currentUser, this.comparedUser, this.currentUser.display_name+" & "+this.comparedUser.display_name)
-    .subscribe( response => {console.log(response)});
+    this.spotify_service.createPlaylist(this.currentUser, this.currentUser.display_name+" & "+this.comparedUser.display_name, `A playlist inspired by ${this.currentUser.display_name} and ${this.comparedUser.display_name}`)
+    .subscribe( (playlist : any) => {
+      console.log(playlist)
+      this.spotify_service.addTracksToPlaylist(playlist.id, this.commonSongs).subscribe(() => {
+        console.log('Tracks added successfully!');
+      });
+    });
   }
   
 

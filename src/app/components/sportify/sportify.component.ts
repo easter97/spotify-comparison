@@ -4,6 +4,7 @@ import { SpotifyService } from 'src/app/services/spotify.service';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { UserObject } from '../spotify-comparison/spotify-comparison.component';
 import { forkJoin, map, catchError, of, Observable } from 'rxjs';
+
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -11,6 +12,9 @@ import {
   CdkDrag,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CreatePlaylistModalComponent } from './create-playlist-modal/create-playlist-modal/create-playlist-modal.component';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-sportify',
@@ -22,20 +26,22 @@ export class SportifyComponent implements OnInit {
   unselectedPlaylists:any = [];
   selectedPlaylists:any = [];
   currentStep = 0;
-  maxStep = 3; // Total number of steps
+  maxStep = 4; // Total number of steps
   commonSongs=[];
   commonSongDivider=0;
   progress=0;
   loading=false;
   playlistLimit;
+  playlistRuntime;
   playlistSongs;
   sortKey = "tempo"
   avgBPM=0;
+  playlistURL: any="3Fi7wMYXoD3fb8kpNzjNoM";
   runtime=0;
   exercises=[
     {name: "Warm Up", bpm: "100 to 140 BPM", minBPM: 100, maxBPM: 140},
     {name: "Cool Down", bpm: "60 to 90 BPM", minBPM: 60, maxBPM: 90},
-    {name: "Weightlifting", bpm: "130 to 150 BPM", minBPM: 130, maxBPM: 150},
+    {name: "Weight Lifting", bpm: "130 to 150 BPM", minBPM: 130, maxBPM: 150},
     {name: "Yoga & Pilates", bpm: "60 to 90 BPM", minBPM: 60, maxBPM: 90},
     {name: "Power Yoga", bpm: "100 to 140 BPM", minBPM: 100, maxBPM: 140},
     {name: "HIIT & Cycling", bpm: "140 to 190 BPM", minBPM: 140, maxBPM: 190},
@@ -53,7 +59,9 @@ export class SportifyComponent implements OnInit {
   constructor(private route: ActivatedRoute, 
     private spotify_service:SpotifyService, 
     private router:Router,
-    private dataService:UserDataService) {
+    private dataService:UserDataService,
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer) {
       if(this.dataService.currentUser!=undefined){
         this.user = this.dataService.currentUser;
         sessionStorage.setItem("currentUser", JSON.stringify(this.user));
@@ -62,6 +70,9 @@ export class SportifyComponent implements OnInit {
         this.user=JSON.parse(sessionStorage.getItem("currentUser"));
         console.log(this.user)
       }
+      this.playlistURL=this.sanitizer.bypassSecurityTrustResourceUrl(
+        `https://open.spotify.com/embed/playlist/${this.playlistURL}`
+      );
      }
 
   ngOnInit() {
@@ -164,7 +175,18 @@ export class SportifyComponent implements OnInit {
   }
 
   shuffleAndSelect() {
-    let x = this.playlistLimit;
+    let x;
+
+    if(this.playlistLimit && this.playlistLimit < this.commonSongs.length){
+      x = this.playlistLimit;
+    }
+    else if(this.playlistRuntime){
+      x = this.commonSongs.length;
+    }
+    else{
+      return this.sortByKey(this.commonSongs, this.sortKey);
+    }
+
     // Create a copy of the array to avoid modifying the original array
     let shuffledArray = [...this.commonSongs];
   
@@ -174,8 +196,23 @@ export class SportifyComponent implements OnInit {
       [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; // Swap elements
     }
   
-    // Return the first 'x' items from the shuffled array
-    let slice = shuffledArray.slice(0, x);
+    let slice=[];
+    if(this.playlistLimit){
+          // Return the first 'x' items from the shuffled array
+          slice = shuffledArray.slice(0, x);
+    }
+    if(this.playlistRuntime){
+      //we'll add songs until we hit our limit
+      let time=0;
+      for(let song of shuffledArray){
+        if(time>this.playlistRuntime){
+          break; 
+        }
+        slice.push(song);
+        time+=song.duration_ms/60000;
+      }
+    }
+
     return this.sortByKey(slice, this.sortKey);
   }
 
@@ -201,13 +238,7 @@ export class SportifyComponent implements OnInit {
           });
           console.log('results', mergedArray)
             this.commonSongs=this.removeItemsWithNullOrEmptyKey(mergedArray, 'name')
-            if(this.playlistLimit && this.playlistLimit < this.commonSongs.length){
-              this.playlistSongs = this.shuffleAndSelect()
-            }
-            else{
-              this.playlistSongs = this.commonSongs;
-            }
-            this.playlistSongs=this.sortByKey(this.playlistSongs, this.sortKey);
+            this.playlistSongs = this.shuffleAndSelect();
             this.getStats();
             this.nextStep();
             this.loading=false;
@@ -347,6 +378,42 @@ export class SportifyComponent implements OnInit {
       })
     );
   }
+
+  openDialog() {
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.minWidth = '60vw';
+
+    let username=this.user.display_name.split(" ")[0];
+
+    dialogConfig.data = {
+      name: `${username}'s ${this.activeExercise.name} Playlist`,
+      isPublic: true,
+      description: `Your perfect ${this.playlistRuntime ? this.playlistRuntime+" minute " : ''}${this.playlistLimit ? this.playlistLimit+" song " : ''}playlist for ${this.activeExercise.name}, targeting a BPM between ${this.activeExercise.minBPM} and ${this.activeExercise.maxBPM}.`
+  };
+
+  const dialogRef = this.dialog.open(CreatePlaylistModalComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      data => {
+        console.log("Dialog output:", data)
+        this.spotify_service.createPlaylist(this.user, data.name, data.description, data.isPublic)
+        .subscribe( (playlist : any) => {
+          console.log(playlist)
+          this.playlistURL=this.sanitizer.bypassSecurityTrustResourceUrl(
+            `https://open.spotify.com/embed/playlist/${playlist.id}`
+          );
+          this.spotify_service.addTracksToPlaylist(playlist.id, this.playlistSongs).subscribe(() => {
+            console.log('Tracks added successfully!');
+            this.nextStep();
+          });
+        });
+      }
+  );
+}
   
   
 
