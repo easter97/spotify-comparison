@@ -162,15 +162,14 @@ export class HomeComponent implements OnInit {
         }
       },
       error => {
-        alert("Your session has timed out");
-        this.router.navigate(['/login']);
+        console.error('session timeout');
       },);
       let playlistSub=this.spotify_service.getPlaylists()
       playlistSub.subscribe( (data : any) => {
         console.log(data)
         if(data!=null && data!=undefined){
-          this.user.playlists=data.items;
-        this.user.modifiedPlaylists=data.items;
+          this.user.playlists=data;
+        this.user.modifiedPlaylists=data;
         }
         
         

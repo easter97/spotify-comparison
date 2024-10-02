@@ -1,24 +1,173 @@
+<div class=logo>
+  <img src="../../../assets/images/sportify-clear.png" />
+  <span>Sportify</span>
+</div>
 <div class="wrapper intro">
-<div class=welcome>Welcome to Sportify</div>
-<div class=desc>Sportify samples music you already love and helps you create a custom playlist for your workouts based on the ideal BPM for your exercise.</div>
 
-<div class=select>Please select your exercise:</div>
-<div class=exercises>
-  <div class=exercise *ngFor="let exercise of exercises" (click)="selectExercise(exercise)">
-    <div class=title>{{exercise.name}}</div>
-    <div class=bpm>{{exercise.bpm}}</div>
+<div class="stepper">
+  <!-- Step content -->
+  <div class="step step0" *ngIf="currentStep === 0">
+    <div class=welcome>Welcome to Sportify</div>
+  <div class=desc>Sportify samples music you already love and helps you create a custom playlist for your workouts based on the ideal BPM for your exercise.</div>  
+    <button (click)="nextStep()">Get Started</button>
   </div>
+
+  <div class="step step1" *ngIf="currentStep === 1">
+    <div class="title-nav">
+      <button (click)="previousStep()" [disabled]="currentStep === 1">Previous</button>
+      <div class=select>Please select your exercise</div>
+      <button (click)="nextStep()" [disabled]="currentStep === maxStep">Next</button>
+    </div>
+
+    <div class=exercises>
+      <div class=exercise *ngFor="let exercise of exercises" (click)="selectExercise(exercise)" [ngClass]="{'selected': this.activeExercise == exercise}">
+        <div class=title>{{exercise.name}}</div>
+        <div class=bpm>{{exercise.bpm}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step step2" *ngIf="currentStep === 2 && !loading">
+
+    <div *ngIf="activeExercise!=null" class="wrapper playlist">
+      <div class="selection">
+          
+          <h2>Select up to 5 playlists to sample from:</h2>
+        <div
+          cdkDropList
+          #todoList="cdkDropList"
+          [cdkDropListData]="unselectedPlaylists"
+          [cdkDropListConnectedTo]="[doneList]"
+          class="example-list"
+          [cdkDropListDisabled]="!(selectedPlaylists.length<5)"
+          (cdkDropListDropped)="drop($event)">
+          @for (playlist of unselectedPlaylists; track playlist) {
+            <div class="example-box" cdkDrag>{{playlist.name}}</div>
+          }
+        </div>
+        <button (click)="previousStep()" [disabled]="currentStep === 1">Previous</button>
+      </div>
+      <div class="inspiration">
+        <h2 class=title>Workout Inspiration</h2>
+        <mat-tab-group>
+          <mat-tab label="Playlists">
+            <div class=tab-content>
+              <div
+              cdkDropList
+              #doneList="cdkDropList"
+              [cdkDropListData]="selectedPlaylists"
+              [cdkDropListConnectedTo]="[todoList]"
+              class="example-list"
+              (cdkDropListDropped)="drop($event)">
+              @for (playlist of selectedPlaylists; track playlist) {
+                <div class="example-box" cdkDrag>{{playlist.name}}</div>
+              }
+            </div>
+            
+            </div>
+          </mat-tab>
+          <mat-tab label="Options">
+            <div class=tab-content>
+              <mat-form-field class="example-full-width">
+                <mat-label>Desired Number of Songs</mat-label>
+                <input matInput type="number" placeholder="If blank, no limit" [(ngModel)]="playlistLimit">
+              </mat-form-field>
+              OR
+              <mat-form-field class="example-full-width">
+                <mat-label>Desired Length (minutes)</mat-label>
+                <input matInput type="number" placeholder="If blank, no limit" [(ngModel)]="playlistLimit">
+              </mat-form-field>
+              
+              <mat-form-field>
+                <mat-label>Sort By</mat-label>
+                <select matNativeControl (change)="selectChange($event)">
+                  <option value="tempo">BPM</option>
+                  <option value="name">Song Title</option>
+                  <option value="artist">Artist</option>
+                </select>
+              </mat-form-field>
+  
+                <mat-label>Adjust BPM Range</mat-label>
+                <mat-slider min="60" max="300" showTickMarks discrete>
+                  <input [(ngModel)]="activeExercise.minBPM" matSliderStartThumb>
+                  <input [(ngModel)]="activeExercise.maxBPM" matSliderEndThumb>
+                </mat-slider>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+        <button (click)="createPlaylist()">Create Playlist </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="loading" style="width: 100vw; height:100vh; display: flex; align-items: center; justify-content: center">
+    <h2 *ngIf="progress < 50">Fetching Tracks</h2>
+    <h2 *ngIf="progress >= 50">Analyzing Tracks</h2>
+    <mat-progress-spinner
+      class="example-margin"
+      mode="determinate"
+      [value]="progress">
+  </mat-progress-spinner>
+  </div>
+
+  <div class="step step3" *ngIf="currentStep === 3">
+    <div id=common-songs>
+      <h2>Step 3</h2>
+      <div class=sort>
+        <mat-form-field>
+          <mat-label>Sort By</mat-label>
+          <select matNativeControl (change)="selectChange($event)">
+            <option value="tempo">BPM</option>
+            <option value="name">Song Title</option>
+            <option value="artist">Artist</option>
+          </select>
+        </mat-form-field>
+      </div>
+      <div class=title *ngIf="!playlistLimit">{{playlistSongs.length}} Songs for this playlist</div>
+      <div class=title *ngIf="playlistLimit">Showing {{playlistSongs.length}} of {{commonSongs.length}} possible songs for this playlist</div>
+      <button *ngIf="playlistLimit && playlistLimit < commonSongs.length" (click)="reshuffle()">Shuffle</button>
+      <div class=stats>
+        <div class=stat>Runtime {{this.runtime | number:'1.0-0'}} minutes</div>
+        <div class=stat>Average BPM {{this.avgBPM | number:'1.0-0'}}</div>
+      </div>
+      <div class=song-list>
+        <div class=row>
+            <div class=song *ngFor="let song of playlistSongs" >
+            <div class=album>
+              <div class=cover-art>
+                <img class=cover-art src="{{song.album.images[0]?.url}}">
+                <span class="close-button" title="Remove this song" (click)="removeSong(song.id)">&#10006;</span> <!-- Unicode for "X" -->
+              </div>
+              
+              <div class=vinyl ></div>
+            </div>
+            <div class=details>
+              {{song.name}} 
+              <div class=artist>{{song.artists[0].name}}</div>
+              <div class=bpm>{{song.tempo | number:'1.0-0' }} BPM</div>
+            </div>
+          </div>
+        </div>
+        <div class=playlist>
+          <div class=create-playlist>
+            <h1>Better Together.</h1>
+            <h3>Create a playlist inspired by both your music tastes</h3>
+            <button (click)=createPlaylist()>Create</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <!-- <div class="navigation">
+    <button (click)="previousStep()" [disabled]="currentStep === 1">Previous</button>
+    <button (click)="nextStep()" [disabled]="currentStep === maxStep">Next</button>
+  </div> -->
 </div>
-<div *ngIf="activeExercise!=null" class="wrapper playlist">
-  <p>Select up to 5 playlists to sample from:</p>
-  <ul class=song-list>
-    <li *ngFor="let playlist of user?.modifiedPlaylists; let i = index">
-      {{ playlist?.name}}
-      <button class=remove (click)="removePlaylist(playlist.id, 'current')">&#10005;</button>
-    </li>
-  </ul>
-  <button (click)="createPlaylist()">Create Playlist </button>
-</div>
+
 
 
 <!-- <div class=quote>

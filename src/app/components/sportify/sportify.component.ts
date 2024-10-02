@@ -3,7 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SpotifyService } from 'src/app/services/spotify.service';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { UserObject } from '../spotify-comparison/spotify-comparison.component';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map, catchError, of, Observable } from 'rxjs';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+  CdkDrag,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-sportify',
@@ -12,6 +19,19 @@ import { forkJoin } from 'rxjs';
 })
 export class SportifyComponent implements OnInit {
   collaborative:boolean=false;
+  unselectedPlaylists:any = [];
+  selectedPlaylists:any = [];
+  currentStep = 0;
+  maxStep = 3; // Total number of steps
+  commonSongs=[];
+  commonSongDivider=0;
+  progress=0;
+  loading=false;
+  playlistLimit;
+  playlistSongs;
+  sortKey = "tempo"
+  avgBPM=0;
+  runtime=0;
   exercises=[
     {name: "Warm Up", bpm: "100 to 140 BPM", minBPM: 100, maxBPM: 140},
     {name: "Cool Down", bpm: "60 to 90 BPM", minBPM: 60, maxBPM: 90},
@@ -46,37 +66,64 @@ export class SportifyComponent implements OnInit {
 
   ngOnInit() {
     this.exercises.sort((a, b) => (a.minBPM < b.minBPM) ? 1 : -1);
-
-    this.spotify_service.getUser().subscribe( data => {
-      //console.log(data);
-      if(data!=null && data!=undefined){
-        let body=JSON.parse(data['_body']);
-        console.log(body)
-        this.user.display_name=body.display_name;
-        this.user.img=body.images[0].url;
-        this.user.id=body.id;
-      }
-    },
-    error => {
-      if(this.user==null){
-        alert("Your session has timed out");
-        this.router.navigate(['/login']);
-      }
-      
-    },);
+    console.log('getting user')
+    this.spotify_service.getUser().subscribe( 
+      (data : any) => {
+        console.log(data);
+        if(data!=null && data!=undefined){
+          let body=data;
+          console.log(body)
+          this.user.display_name=body.display_name;
+          this.user.img=body.images[0].url;
+          this.user.id=body.id;
+        }
+      },
+      error => {
+          alert("Your session has timed out, please log in again");
+          this.router.navigate(['/login']);
+      },
+    );
     let playlistSub=this.spotify_service.getPlaylists()
-    playlistSub.subscribe( data => {
+    playlistSub.subscribe( (data : any) => {
       console.log(data)
-      this.user.playlists=JSON.parse(data['_body']).items;
-      this.user.modifiedPlaylists=JSON.parse(data['_body']).items;
+      this.user.playlists=data;
+      this.user.modifiedPlaylists=data;
       
       // this.user.songList=this.getTracks(this.user.playlists, this.user.id);
       this.onlyUserPlaylists()
+      //set list selection
+      this.unselectedPlaylists=this.user.modifiedPlaylists;
     });
   }
+  nextStep() {
+    if (this.currentStep < this.maxStep) {
+      this.currentStep++;
+    }
+  }
+
+  previousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+    }
+  }
+
   onlyUserPlaylists(){
     //remove playlists not created by the user
     let removedIDs=[];
+    console.log('modified',this.user.modifiedPlaylists)
     for(let playlist of this.user.modifiedPlaylists){
       if((playlist.owner.id !== this.user.id) || !this.collaborative && playlist.collaborative){
         removedIDs.push(playlist.id);
@@ -108,109 +155,199 @@ export class SportifyComponent implements OnInit {
   selectExercise(activeExercise){
     this.activeExercise=activeExercise;
   }
+  removeItemsWithNullOrEmptyKey<T>(array, key){
+    return array.filter(item => item[key] !== null && item[key] !== "");
+  }
+  removeSong(songId){
+    this.playlistSongs = this.playlistSongs.filter(item => item.id !== songId);
+    this.getStats();
+  }
+
+  shuffleAndSelect() {
+    let x = this.playlistLimit;
+    // Create a copy of the array to avoid modifying the original array
+    let shuffledArray = [...this.commonSongs];
+  
+    // Fisher-Yates shuffle algorithm
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; // Swap elements
+    }
+  
+    // Return the first 'x' items from the shuffled array
+    let slice = shuffledArray.slice(0, x);
+    return this.sortByKey(slice, this.sortKey);
+  }
+
+  reshuffle(){
+    this.playlistSongs = this.shuffleAndSelect();
+    this.getStats();
+  }
+  
+  
   createPlaylist(){
-    this.user.songList=this.getTracks(this.user.modifiedPlaylists);
+    this.loading=true;
+    this.user.songList=this.getTracks(this.selectedPlaylists);
     let finished = forkJoin(this.subArray);
       finished.subscribe( result => {
         console.log(this.user.songList);
-        let analysis = this.getAnalysis(this.user.songList);
-        let tFin = forkJoin(this.trackArray);
-        tFin.subscribe( result => {
-          console.log(analysis);
+        this.getAnalysis(this.user.songList).subscribe((songList : any)=>{
+          //reduce songlist array
+          const mergedArray = this.user.songList
+          .filter(a => songList.some(b => b.id === a.track.id))  // Keep only entries that have a match in arrayB
+          .map(a => {
+            const matchB = songList.find(b => b.id === a.track.id); // Find the matching object in arrayB
+            return { ...a.track, ...matchB, ...{'artist': a.track.artists[0].name} }; // Merge the matching objects
+          });
+          console.log('results', mergedArray)
+            this.commonSongs=this.removeItemsWithNullOrEmptyKey(mergedArray, 'name')
+            if(this.playlistLimit && this.playlistLimit < this.commonSongs.length){
+              this.playlistSongs = this.shuffleAndSelect()
+            }
+            else{
+              this.playlistSongs = this.commonSongs;
+            }
+            this.playlistSongs=this.sortByKey(this.playlistSongs, this.sortKey);
+            this.getStats();
+            this.nextStep();
+            this.loading=false;
+          // this.spotify_service.getTracks(songList.map(song => song.id)).subscribe((results : any)=>{
+          //   console.log('results',results)
+          //   this.commonSongs=results;
+          //   this.commonSongDivider=Math.floor(this.commonSongs.length/3);
+          //   this.nextStep();
+          //   this.loading=false;
+          // })
         });
       });
-    
-    console.log("created")
-    // this.spotify_service.getAnalysis(this.user.songList[0]);
   }
+  sortByKey(array, key, order: 'asc' | 'desc' = 'asc') {
+    console.log(key)
+    return array.sort((a, b) => {
+      if (a[key] < b[key]) {
+        return order === 'asc' ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return order === 'asc' ? 1 : -1;
+      }
+      return 0; // If they are equal
+    });
+  }
+  selectChange($event){
+    let target = $event.target.value
+    this.sortKey = target;
+    if(this.commonSongs){
+      this.sortByKey(this.commonSongs, target);
+    }
+  }
+
+  getStats(){
+    this.getRuntime();
+    this.getAvg();
+  }
+
+  getAvg(){
+    this.avgBPM=0;
+    for(let song of this.playlistSongs){
+      this.avgBPM+=song.tempo;
+    }
+    //turn into minutes
+    this.avgBPM=this.avgBPM/this.playlistSongs.length;
+  }
+
+  getRuntime(){
+    this.runtime=0;
+    for(let song of this.playlistSongs){
+      this.runtime+=song.duration_ms;
+    }
+    //turn into minutes
+    this.runtime=this.runtime/60000;
+  }
+
+  
   getTracks(playlists:any){
     let playlist_ids=[];
     let songList=[];
     for(let i=0; i<playlists.length; i++){
       let loops=1;
-      let offset=0;
-      if(playlists[i].tracks.total>100){
-        //we have to submit multiple requests to get them all
+      let progressStep;
+      if(playlists[i].tracks.total>50){
+        //we have to submit multiple requests to get them al
+        console.log(playlists[i])
         loops=Math.ceil(playlists[i].tracks.total/50);
+        //our progress step with each loop, all loops completed is 50% done
+        progressStep=50/loops;
         //this is how many offsets of 50 we will have to do to get all tracks
         console.log(playlists[i].name, loops);
       }
-      for(let l=0; l<loops; l++){
-        let trackSub=this.spotify_service.getPlaylistTracks(playlists[i].id);
+      // for(let l=0; l<loops; l++){
+        let trackSub=this.spotify_service.getPlaylistTracks(playlists[i]);
         this.subArray.push(trackSub);
-        trackSub.subscribe( tracks => {
-          let songs=JSON.parse(tracks['_body']).items;
-          for(let i = 0; i<songs.length; i++){
-            songList.push(songs[i]);
+        trackSub.subscribe(
+          (songs : any)=>{
+            for(let i = 0; i<songs.length; i++){
+              songList.push(songs[i]);
+            }
+            this.progress++;
+          },
+          error => {
+            console.error(error);
           }
-        },
-        error => {
-          // alert("Your request could not be completed, for best results try and limit playlist length to under 200 songs");
-          this.router.navigate(['/home']);
-        });  
-        offset=offset+50
-      }
+        );  
+      // }
       
     }
     return songList;   
   }
-  getAnalysis(songs:any){
-    let playlist_ids=[];
-    let songList=[];
-    let loops=0;
-    let offset=0;
-    let reqLimit=50
-    if(songs.length>reqLimit){
-      //we have to submit multiple requests to get them all
-      loops=Math.ceil(songs.length/reqLimit);
-      //this is how many offsets of 50 we will have to do to get all tracks
-      console.log(loops);
+  getAnalysis(songs: any): Observable<any[]> {
+    let song_ids: string[] = [];
+    let songList: any[] = [];
+    let loops = 0;
+    let offset = 0;
+    let reqLimit = 50;
+    let progressStep;
+  
+    // Calculate how many loops we need if we have more than reqLimit
+    if (songs.length > reqLimit) {
+      loops = Math.ceil(songs.length / reqLimit);
+    } else {
+      loops = 1; // At least 1 loop if songs length is less than reqLimit
     }
-    for(let l=0; l<loops; l++){
-      let loopCounter=0;
-      for(let i=offset; i<songs.length; i++){
-        if(loopCounter>=50){
+    progressStep=50/loops;
+  
+    // Collect song IDs in batches
+    for (let l = 0; l < loops; l++) {
+      let loopCounter = 0;
+      for (let i = offset; i < songs.length; i++) {
+        if (loopCounter >= reqLimit) {
           break;
         }
-        let trackSub=this.spotify_service.getAnalysis(songs[i].track.id);
-        this.trackArray.push(trackSub);
-        trackSub.subscribe( tracks => {
-          let result=JSON.parse(tracks['_body']).items;
-          console.log(result);
-          // for(let i = 0; i<songs.length; i++){
-            // songList.push(result.track.tempo);
-          // }
-        },
-        error => {
-          // alert("Your request could not be completed, for best results try and limit playlist length to under 200 songs");
-          this.router.navigate(['/home']);
-        });  
+        song_ids.push(songs[i].track.id); // Assumes songs[i].track.id is a valid id
         loopCounter++;
+        this.progress+=progressStep;
       }
-      offset=offset+reqLimit
+      offset += reqLimit;
     }
-
-    // for(let i=0; i<songs.length; i++){
-
-    //   for(let l=0; l<loops; l++){
-    //     let trackSub=this.spotify_service.getAnalysis(songs[i].track.id);
-    //     this.trackArray.push(trackSub);
-    //     trackSub.subscribe( tracks => {
-    //       let songs=JSON.parse(tracks['_body']).items;
-    //       for(let i = 0; i<songs.length; i++){
-    //         songList.push(songs[i]);
-    //       }
-    //     },
-    //     error => {
-    //       // alert("Your request could not be completed, for best results try and limit playlist length to under 200 songs");
-    //       this.router.navigate(['/home']);
-    //     });  
-    //     offset=offset+50
-    //   }
-      
-    // }
-    console.log(songList)
-    return songList;   
+  
+    // Return the observable from getAnalysis instead of subscribing here
+    return this.spotify_service.getAnalysis(song_ids).pipe(
+      map((tracks: any[]) => {
+        // Process the tracks and build the songList
+        for (let track of tracks) {
+          if (track.tempo >= this.activeExercise.minBPM && track.tempo <= this.activeExercise.maxBPM) {
+            songList.push({ id: track.id, tempo: track.tempo });
+          }
+        }
+        return songList; // Return the songList array
+      }),
+      catchError(error => {
+        console.error('Error fetching analysis:', error);
+        // Return an empty array in case of error
+        return of([]);
+      })
+    );
   }
+  
+  
 
 }
